@@ -1,0 +1,116 @@
+<?php
+/**
+ * Typographic enhancements for titles in Textpattern CMS
+ *
+ * @author:  Patrick LEFEVRE.
+ * @link:    https://github.com/cara-tm/pat_typo
+ * @type:    Public
+ * @prefs:   no
+ * @order:   5
+ * @version: 0.1.0
+ * @license: GPLv2
+*/
+
+
+/**
+ * This plugin tag registry.
+ */
+if (class_exists('\Textpattern\Tag\Registry')) {
+	Txp::get('\Textpattern\Tag\Registry')
+		->register('pat_typo');
+}
+
+
+/**
+ * Main plugin function
+ *
+ * @param  $text   string  The text content
+ * @param  $lang   string  Country code (ISO2)
+ * @param  $choice boolean Change the replacement sign
+ * @return $atts   string  The text content
+ */
+function pat_typo($atts, $thing = null)
+{
+
+	extract(lAtts(array(
+		'text'     => title(array()),
+		'lang'     => get_pref('language', TEXTPATTERN_DEFAULT_LANG, true),
+		'choice'   => 1,
+	), $atts));
+
+	$text = _guillemet($text , $choice);
+	$text = _fewchars($text);
+	$text = _punctuation($text, $lang);
+	//$text = _dash($text);
+
+	return $text;
+
+}
+
+/**
+ * _guillemet
+ *
+ * Adds spaces around the french quotes 'guillemets'
+ *
+ * @param
+ * @return
+ */
+function _guillemet($text, $choice = null)
+{
+    $choice == 1 ? $thin = '&#x0202F;' : $thin = '<span class="thinsp">&#8202;</span>';
+    $matches = '/(«|&#171;|&#xab;|&laquo;)\s(.*)\s(»|&#187;|&#xbb;|&raquo;)/sU';
+    return preg_replace($matches, '$1'.$thin.'$2'.$thin.'$3', $text);
+}
+
+/**
+ * _fewchars
+ *
+ * Surrounds few characters with non breaking spaces
+ *
+ * @param
+ * @return
+ */
+function _fewchars($text)
+{
+    //$fewchars_finder = '/\s([a-zA-Z]{1}[0-9:;]{1,2})\s/';
+    $matches = '/\s([a-z0-9\:]{0,2})\s/';
+    return preg_replace($matches, '&nbsp;$1&nbsp;', $text);
+}
+
+
+/**
+ * _punctuation
+ *
+ * Adds a space before some signs for French language
+ *
+ * @param
+ * @return
+ */
+function _punctuation($text , $lang = null)
+{
+
+    if ($lang === 'fr' or $lang === 'fr-FR') {
+        $matches = '/\s(\?|\!|\;|\%|\€)(\s)?/';
+        return preg_replace($matches, '&nbsp;$1$2', $text);
+    } else {
+        return $text;
+    }
+
+}
+
+
+/**
+ * _dash
+ * 
+ * Puts a &thinsp; before and after an &ndash or &mdash;
+ * Dashes may have whitespace or an `&nbsp;` on both sides
+ *
+ * @param
+ * @return
+ */
+function _dash( $text )
+{
+    $thin = '<span class="thinsp">&#8202;</span>';
+    $matches = '/(\s|&nbsp;|&thinsp;)*(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–)(\s|&nbsp;|&thinsp;)*/';
+    return preg_replace($matches, $thin.'$2'.$thin, $text);
+}
