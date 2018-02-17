@@ -41,7 +41,7 @@ function pat_typo($atts, $thing = null)
 	$text = _guillemet($text , $choice);
 	$text = _fewchars($text);
 	$text = _punctuation($text, $lang);
-	//$text = _dash($text);
+	$text = _dash($text);
 
 	return $text;
 
@@ -57,9 +57,10 @@ function pat_typo($atts, $thing = null)
  */
 function _guillemet($text, $choice = null)
 {
-    $choice == 1 ? $thin = '&#x0202F;' : $thin = '<span class="thinsp">&#8202;</span>';
-    $matches = '/(«|&#171;|&#xab;|&laquo;)\s(.*)\s(»|&#187;|&#xbb;|&raquo;)/sU';
-    return preg_replace($matches, '$1'.$thin.'$2'.$thin.'$3', $text);
+	$choice == 1 ? $thin = '&#x0202F;' : $thin = '<span class="thinsp">&#8202;</span>';
+	$matches = '/(«|&#171;|&#xab;|&laquo;)\s(.*)\s(»|&#187;|&#xbb;|&raquo;)/sU';
+
+	return preg_replace($matches, '$1'.$thin.'$2'.$thin.'$3', $text);
 }
 
 /**
@@ -72,9 +73,9 @@ function _guillemet($text, $choice = null)
  */
 function _fewchars($text)
 {
-    //$fewchars_finder = '/\s([a-zA-Z]{1}[0-9:;]{1,2})\s/';
-    $matches = '/\s([a-z0-9\:]{0,2})\s/';
-    return preg_replace($matches, '&nbsp;$1&nbsp;', $text);
+	$matches = '/\s([a-z0-9\:]{0,2})\s/';
+
+	return preg_replace($matches, '&nbsp;$1&nbsp;', $text);
 }
 
 
@@ -89,12 +90,12 @@ function _fewchars($text)
 function _punctuation($text , $lang = null)
 {
 
-    if ($lang === 'fr' or $lang === 'fr-FR') {
-        $matches = '/\s(\?|\!|\;|\%|\€)(\s)?/';
-        return preg_replace($matches, '&nbsp;$1$2', $text);
-    } else {
-        return $text;
-    }
+	if ($lang === 'fr' or $lang === 'fr-FR') {
+		$matches = '/\s(\?|\!|\;|\%|\€)(\s)?/';
+		return preg_replace($matches, '&nbsp;$1$2', $text);
+	} else {
+		return $text;
+	}
 
 }
 
@@ -103,14 +104,17 @@ function _punctuation($text , $lang = null)
  * _dash
  * 
  * Puts a &thinsp; before and after an &ndash or &mdash;
- * Dashes may have whitespace or an `&nbsp;` on both sides
+ * Change sinple dash by endashes instead.
  *
  * @param
  * @return
  */
 function _dash( $text )
 {
-    $thin = '<span class="thinsp">&#8202;</span>';
-    $matches = '/(\s|&nbsp;|&thinsp;)*(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–)(\s|&nbsp;|&thinsp;)*/';
-    return preg_replace($matches, $thin.'$2'.$thin, $text);
+
+	$matches = '/(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)(.*)(\s|&nbsp;|&thinsp;)(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)/sU';
+
+	return preg_replace($matches, '<span class="thinsp">–&#8202;$3&#8202;–</span>$6', $text);
+
 }
+
