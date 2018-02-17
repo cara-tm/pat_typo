@@ -11,4 +11,6 @@ A plugin for titles where Textpattern can't improves the peculiarities of the Fr
 
 The same process noticed within some online french newspaper websites.
 
+Notice: this plugin do not correct inconsistencies but only enhances the visual result by sniffing normal spaces around some signs for some corrections.
+
 ![Result](https://raw.githubusercontent.com/cara-tm/pat_typo/master/screenshot.png "Preview")
