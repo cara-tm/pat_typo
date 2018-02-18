@@ -9,6 +9,14 @@ A plugin for titles where Textpattern can't improves the peculiarities of the Fr
 * injects non breaking spaces arround small words;
 * injects non breaking spaces before colons, exclamation points, question marks, semi colons.
 
+## Additional CSS rules
+
+For good renderings, please add this simple rule into your stylesheets:
+
+    .thinsp {
+    	white-space: nowrap;
+    }
+
 The same process noticed within some online french newspaper websites.
 
 Notice: this plugin do not correct inconsistencies but only enhances the visual result by sniffing normal spaces around some signs for some corrections.
