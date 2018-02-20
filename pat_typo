@@ -38,6 +38,7 @@ function pat_typo($atts, $thing = null)
 		'choice'   => 1,
 	), $atts));
 
+	$text = _widont($text);
 	$text = _guillemet($text , $choice);
 	$text = _fewchars($text);
 	$text = _punctuation($text, $lang);
@@ -46,6 +47,22 @@ function pat_typo($atts, $thing = null)
 	return $text;
 
 }
+
+
+/**
+ * widont
+ * 
+ * Replaces the space between the last two words in a string with &160; even with punctuation signs
+ * 
+ * @param  $text     string
+ * @param  $no_widow boolean TXP attribute
+ * @return $text     string
+ */
+function _widont($text)
+{
+		return (true === no_widow ? preg_replace( '/\s([^\s\»]+)\s*$/', '&160;$1', $text) : $text);
+}
+
 
 /**
  * _guillemet
