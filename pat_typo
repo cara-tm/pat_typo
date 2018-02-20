@@ -44,7 +44,7 @@ function pat_typo($atts, $thing = null)
 	$text = _last_guillemets($text , $force);
 	//$text = _fewchars($text);
 	$text = _punctuation($text, $lang);
-	$text = _dash($text);
+	$text = _dash($text, $force);
 
 	return $text;
 
@@ -136,15 +136,16 @@ function _punctuation($text, $lang = null)
  * Puts a &thinsp; before and after an &ndash or &mdash;
  * Change sinple dash by endashes instead.
  *
- * @param
- * @return
+ * @param  $text string The text entry
+ * @return $text string The new text entry
  */
-function _dash( $text )
+function _dash($text, $force)
 {
 
-	$matches = '/(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)(.*)(\s|&nbsp;|&thinsp;)(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)/sU';
+	$thin = $force == false ? '–&#x0202F;$3&#x0202F;–$6' : '<span class="thinsp">–&#8202;$3&#8202;–</span>$6';
+	$matches = '/(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)?(\w*)(\s|&nbsp;|&thinsp;)?(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)?/sU';
 
-	return preg_replace($matches, '<span class="thinsp">–&#8202;$3&#8202;–</span>$6', $text);
+	return preg_replace($matches, $thin, $text);
 
 }
 
