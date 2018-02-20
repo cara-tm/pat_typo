@@ -34,8 +34,9 @@ function pat_typo($atts, $thing = null)
 
 	extract(lAtts(array(
 		'text'     => title(array()),
+		'no_widow' => false,
 		'lang'     => get_pref('language', TEXTPATTERN_DEFAULT_LANG, true),
-		'choice'   => 1,
+		'force'    => false,
 	), $atts));
 
 	$text = _widont($text);
