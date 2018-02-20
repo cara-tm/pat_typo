@@ -12,7 +12,7 @@ A plugin for titles where Textpattern can't improves the peculiarities of the Fr
 
 ## Additional CSS rules
 
-For good renderings, please add this simple rule into your stylesheets:
+For good renderings, please add this simple rule into your stylesheets (if force attribute is set to `1`):
 
     .thinsp {
     	white-space: nowrap;
