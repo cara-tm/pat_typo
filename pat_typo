@@ -62,7 +62,7 @@ function pat_typo($atts, $thing = null)
  */
 function _widont($text, $no_widow)
 {
-		return (true == no_widow ? preg_replace( '/\s([^\s\»]+)\s*$/', '&160;$1', $text) : $text);
+	return (true == no_widow ? preg_replace( '/\s([^\s\»]+)\s*$/', '&160;$1', $text) : $text);
 }
 
 
