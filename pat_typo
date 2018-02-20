@@ -50,13 +50,13 @@ function pat_typo($atts, $thing = null)
 
 
 /**
- * widont
+ * _widont
  * 
  * Replaces the space between the last two words in a string with &160; even with punctuation signs
  * 
- * @param  $text     string
+ * @param  $text     string  The text entry
  * @param  $no_widow boolean TXP attribute
- * @return $text     string
+ * @return $text     string  The text entry
  */
 function _widont($text)
 {
@@ -101,15 +101,16 @@ function _fewchars($text)
  *
  * Adds a space before some signs for French language
  *
- * @param
- * @return
+ * @param $text  string The text entry
+ * @param $lang  string French country code
+ * @return $text string The new text entry
  */
-function _punctuation($text , $lang = null)
+function _punctuation($text, $lang = null)
 {
 
 	if ($lang === 'fr' or $lang === 'fr-FR') {
-		$matches = '/\s(\?|\!|\;|\%|\€)(\s)?/';
-		return preg_replace($matches, '&nbsp;$1$2', $text);
+		$matches = '/(\s)?(:|\?|\!|\;|\%|\€)(\s)/';
+		return preg_replace($matches, '&nbsp;$2$3', $text);
 	} else {
 		return $text;
 	}
