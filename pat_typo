@@ -62,7 +62,7 @@ function pat_typo($atts, $thing = null)
  */
 function _widont($text, $no_widow)
 {
-		return (true === no_widow ? preg_replace( '/\s([^\s\»]+)\s*$/', '&160;$1', $text) : $text);
+		return (true == no_widow ? preg_replace( '/\s([^\s\»]+)\s*$/', '&160;$1', $text) : $text);
 }
 
 
@@ -121,8 +121,8 @@ function _punctuation($text, $lang = null)
 {
 
 	if ($lang === 'fr' or $lang === 'fr-FR') {
-		$matches = '/(\s)?(:|\?|\!|\;|\%|\€)(\s)/';
-		return preg_replace($matches, '&nbsp;$2$3', $text);
+		$pattern = '/(\s)?(:|\?|\!|\;|\%|\€)(\s)/im';
+		return preg_replace($pattern, '&nbsp;$2$3', $text);
 	} else {
 		return $text;
 	}
