@@ -39,9 +39,10 @@ function pat_typo($atts, $thing = null)
 		'force'    => false,
 	), $atts));
 
-	$text = _widont($text);
-	$text = _guillemet($text , $choice);
-	$text = _fewchars($text);
+	$text = _widont($text, $no_widow);
+	$text = _first_guillemets($text , $force);
+	$text = _last_guillemets($text , $force);
+	//$text = _fewchars($text);
 	$text = _punctuation($text, $lang);
 	$text = _dash($text);
 
@@ -59,7 +60,7 @@ function pat_typo($atts, $thing = null)
  * @param  $no_widow boolean TXP attribute
  * @return $text     string  The text entry
  */
-function _widont($text)
+function _widont($text, $no_widow)
 {
 		return (true === no_widow ? preg_replace( '/\s([^\s\»]+)\s*$/', '&160;$1', $text) : $text);
 }
@@ -68,18 +69,28 @@ function _widont($text)
 /**
  * _guillemet
  *
- * Adds spaces around the french quotes 'guillemets'
+ * Adds spaces around the french quotes 'guillemets' (2 functions & regex)
  *
- * @param
- * @return
+ * @param  $text   string  The article title
+ * @param  $choice boolean What kind of traitement? Hair spaces or HTML tags
+ * @return $string
  */
-function _guillemet($text, $choice = null)
+function _first_guillemets($text, $force)
 {
-	$choice == 1 ? $thin = '&#x0202F;' : $thin = '<span class="thinsp">&#8202;</span>';
-	$matches = '/(«|&#171;|&#xab;|&laquo;)\s(.*)\s(»|&#187;|&#xbb;|&raquo;)/sU';
-
-	return preg_replace($matches, '$1'.$thin.'$2'.$thin.'$3', $text);
+	$thin = ($force == false ? '$2&#x0202F;' : '<span class="thinsp">$2&#8202;</span>');
+	// Starting quotes
+	$matches = '/(»)*(«)(\s)?/';
+	return preg_replace($matches, $thin, $text);
 }
+function _last_guillemets($text, $force)
+{
+	$thin = $force == false ? '&#x0202F;$3' : '<span class="thinsp">&#8202;$3</span>';
+	// Final quotes
+	$matches = '/(\s?)(«)*(»)/';
+	return preg_replace($matches, $thin, $text);
+
+}
+
 
 /**
  * _fewchars
