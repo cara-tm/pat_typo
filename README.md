@@ -19,6 +19,6 @@ For good renderings, please add this simple rule into your stylesheets:
 
 The same process noticed within some online french newspaper websites.
 
-Notice: this plugin do not correct inconsistencies but only enhances the visual result by sniffing normal spaces around some signs for some corrections.
+Notice: This plugin solves all writting errors and adds spaces accordingly based to typographic rules.
 
 ![Result with plugin](https://raw.githubusercontent.com/cara-tm/pat_typo/master/with-plugin-enabled.png "With plugin enabled")
