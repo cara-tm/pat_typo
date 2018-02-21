@@ -79,14 +79,14 @@ function _first_guillemets($text, $force)
 {
 	$thin = ($force == false ? '«&#x0202F;' : '<span class="thinsp">«&#8202;</span>');
 	// Starting quotes
-	$matches = '/(«)(\s?)/';
+	$matches = '/(«|"\/)(\s?)/';
 	return preg_replace($matches, $thin, $text);
 }
 function _last_guillemets($text, $force)
 {
 	$thin = $force == false ? '&#x0202F;»' : '<span class="thinsp">&#8202;»</span>';
 	// Final quotes
-	$matches = '/(\s?)(»)/';
+	$matches = '/(\s?)(»|\/")/';
 	return preg_replace($matches, $thin, $text);
 
 }
