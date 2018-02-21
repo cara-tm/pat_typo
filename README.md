@@ -36,7 +36,7 @@ Notice: This plugin solves all writting errors and adds spaces accordingly based
 
 Here is an example of many writing errors:
  
-![Lot of writting errors sample](https://raw.githubusercontent.com/cara-tm/pat_typo/master/writting-errors.png "Sample of writting errors")
+![Lot of writting errors sample](https://raw.githubusercontent.com/cara-tm/pat_typo/master/writing-errors.png "Sample of writting errors")
 
 
 And here is the results:
