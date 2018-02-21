@@ -77,16 +77,16 @@ function _widont($text, $no_widow)
  */
 function _first_guillemets($text, $force)
 {
-	$thin = ($force == false ? '$2&#x0202F;' : '<span class="thinsp">$2&#8202;</span>');
+	$thin = ($force == false ? '«&#x0202F;' : '<span class="thinsp">«&#8202;</span>');
 	// Starting quotes
-	$matches = '/(»)*(«)(\s)?/';
+	$matches = '/(«)(\s?)/';
 	return preg_replace($matches, $thin, $text);
 }
 function _last_guillemets($text, $force)
 {
-	$thin = $force == false ? '&#x0202F;$3' : '<span class="thinsp">&#8202;$3</span>';
+	$thin = $force == false ? '&#x0202F;»' : '<span class="thinsp">&#8202;»</span>';
 	// Final quotes
-	$matches = '/(\s?)(«)*(»)/';
+	$matches = '/(\s?)(»)/';
 	return preg_replace($matches, $thin, $text);
 
 }
