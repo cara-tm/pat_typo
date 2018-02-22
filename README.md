@@ -22,6 +22,10 @@ In replacement of the native `<txp:title />`tag:
 * `lang` string (optional): country code for French language in order to apply specific typographic rules. Default: user preferences language.
 * `force` boolean (optional): allow to switch from HEX encoding non breaking hair spaces to HTML tags markup. Default: false (`0`) HEX non breaking hair spaces. 
 
+## Typography helper
+
+Automatic conversion to real French quotes signs with this simple typographic convention: `"/my word/"` that will be displayed as this: `« my word »` (signs surrounding with hair spaces).
+
 ## Additional CSS rules
 
 For good renderings, please add this simple rule into your stylesheets (if force attribute is set to `1`):
