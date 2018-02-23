@@ -38,7 +38,7 @@ For good renderings, please add this simple rule into your stylesheets (if force
 Notice: This plugin solves all writting errors and adds spaces accordingly based to typographic rules.
 
 
-Here is an example of many writing errors:
+Here is an example of many writing errors (but with the alternative French quote signs generator):
  
 ![Lot of writing errors sample](https://raw.githubusercontent.com/cara-tm/pat_typo/master/writing-errors.png "Sample of writing errors")
 
