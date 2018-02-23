@@ -24,7 +24,8 @@ In replacement of the native `<txp:title />`tag:
 
 ## Typography helper
 
-Automatic conversion to real French quotes signs with this simple typographic convention: `"/my word/"` that will be displayed as this: `« my word »` (signs surrounding with hair spaces).
+Depending of the `lang`attribute value, automatic conversion to real French quotes signs with this simple typographic convention: `"/my word/"` that will be displayed as this: `« my word »` (signs surrounding with hair spaces) or `“my word”` for English users.
+Automatic conversion for keyboard `-` sign to en dashes (`–`) for French users or em dashes (`—`) for English ones.
 
 ## Additional CSS rules
 
