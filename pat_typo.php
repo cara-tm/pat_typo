@@ -33,17 +33,17 @@ function pat_typo($atts, $thing = null)
 {
 
 	extract(lAtts(array(
-		'text'     => title(array()),
+		'text'     => title(array('no_widow' => 0)),
 		'no_widow' => false,
 		'lang'     => get_pref('language', TEXTPATTERN_DEFAULT_LANG, true),
 		'force'    => false,
 	), $atts));
 
+	//$text = _fewchars($text);
+	$text = _punctuation($text, $lang);
 	$text = _widont($text, $no_widow);
 	$text = _first_guillemets($text , $force);
 	$text = _last_guillemets($text , $force);
-	//$text = _fewchars($text);
-	$text = _punctuation($text, $lang);
 	$text = _dash($text, $force);
 
 	return $text;
@@ -62,7 +62,7 @@ function pat_typo($atts, $thing = null)
  */
 function _widont($text, $no_widow)
 {
-	return (true == no_widow ? preg_replace( '/\s([^\s\»]+)\s*$/', '&160;$1', $text) : $text);
+	return (true == no_widow ? preg_replace( '/(\s)([^\s\»]+)\s*(\s)?$/', '&160;$2', $text) : $text);
 }
 
 
@@ -79,14 +79,14 @@ function _first_guillemets($text, $force)
 {
 	$thin = ($force == false ? '«&#x0202F;' : '<span class="thinsp">«&#8202;</span>');
 	// Starting quotes
-	$matches = '/(«|"\/)(\s?)/';
+	$matches = '/(«|&#34;\/|"\/)(\s?)/';
 	return preg_replace($matches, $thin, $text);
 }
 function _last_guillemets($text, $force)
 {
 	$thin = $force == false ? '&#x0202F;»' : '<span class="thinsp">&#8202;»</span>';
 	// Final quotes
-	$matches = '/(\s?)(»|\/")/';
+	$matches = '/(\s?)(»|\/&#34;|\/")/';
 	return preg_replace($matches, $thin, $text);
 
 }
@@ -121,8 +121,8 @@ function _punctuation($text, $lang = null)
 {
 
 	if ($lang === 'fr' or $lang === 'fr-FR') {
-		$pattern = '/(\s)?(:|\?|\!|\;|\%|\€)(\s)/im';
-		return preg_replace($pattern, '&nbsp;$2$3', $text);
+		$pattern = '/(\s)?(:|\?|\!|\%|\€)/im';
+		return preg_replace($pattern, '&nbsp;$2', $text);
 	} else {
 		return $text;
 	}
