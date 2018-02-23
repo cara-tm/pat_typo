@@ -42,52 +42,64 @@ function pat_typo($atts, $thing = null)
 	//$text = _fewchars($text);
 	$text = _punctuation($text, $lang);
 	$text = _widont($text, $no_widow);
-	$text = _first_guillemets($text , $force);
-	$text = _last_guillemets($text , $force);
-	$text = _dash($text, $force);
+	$text = _first_signs($text , $lang, $force);
+	$text = _last_signs($text , $lang, $force);
+	$text = _dash($text, $lang, $force);
 
 	return $text;
 
 }
 
-
 /**
- * _widont
+ * widont
  * 
- * Replaces the space between the last two words in a string with &160; even with punctuation signs
+ * Replaces the space between the last two words in a string with &160;
  * 
  * @param  $text     string  The text entry
  * @param  $no_widow boolean TXP attribute
- * @return $text     string  The text entry
+ * @return $text     string  The new text entry
  */
 function _widont($text, $no_widow)
 {
-	return (true == no_widow ? preg_replace( '/(\s)([^\s\»]+)\s*(\s)?$/', '&160;$2', $text) : $text);
+	return (true == $no_widow ? preg_replace( '/(\s)([^\s\»]+)\s*(\s)?$/', '&#160;$2', $text) : $text);
 }
 
 
 /**
- * _guillemet
+ * _signs
  *
- * Adds spaces around the french quotes 'guillemets' (2 functions & regex)
+ * Adds spaces around the french quotes 'guillemets' or change by quotation marks
  *
  * @param  $text   string  The article title
- * @param  $choice boolean What kind of traitement? Hair spaces or HTML tags
+ * @param  $lang   string  The country code
+ * @param  $choice boolean Choice for hair spaces or HTML tags
  * @return $string
  */
-function _first_guillemets($text, $force)
+function _first_signs($text, $lang, $force)
 {
-	$thin = ($force == false ? '«&#x0202F;' : '<span class="thinsp">«&#8202;</span>');
-	// Starting quotes
-	$matches = '/(«|&#34;\/|"\/)(\s?)/';
-	return preg_replace($matches, $thin, $text);
+	if ($lang == 'fr' or $lang == 'fr-FR') {
+		$thin = ($force == false ? '«&#x0202F;' : '<span class="thinsp">«&#8202;</span>');
+		// Starting quotes
+		$matches = '/(«|&#34;\/|"\/)(\s?)/';
+		return preg_replace($matches, $thin, $text);
+	} else {
+		$sign = ($force == false ? '“$2' : '<span class="thinsp">“</span>$2');
+		$matches = '/(&#34;\/|"\/)(\s?)/';
+		return preg_replace($matches, $sign, $text);
+	}
 }
-function _last_guillemets($text, $force)
+function _last_signs($text, $lang, $force)
 {
-	$thin = $force == false ? '&#x0202F;»' : '<span class="thinsp">&#8202;»</span>';
-	// Final quotes
-	$matches = '/(\s?)(»|\/&#34;|\/")/';
-	return preg_replace($matches, $thin, $text);
+	if ($lang == 'fr' or $lang == 'fr-FR') {
+		$thin = $force == false ? '&#x0202F;»' : '<span class="thinsp">&#8202;»</span>';
+		// Final quotes
+		$matches = '/(\s?)(»|\/&#34;|\/")/';
+		return preg_replace($matches, $thin, $text);
+	} else {
+		$sign = $force == false ? '”$2' : '<span class="thinsp">”</span>$2';
+		$matches = '/(\/&#34;|\/")(\s?)/';
+		return preg_replace($matches, $sign, $text);
+	}
 
 }
 
@@ -97,14 +109,14 @@ function _last_guillemets($text, $force)
  *
  * Surrounds few characters with non breaking spaces
  *
- * @param
- * @return
+ * @param $text  string The text entry
+ * @return $text string The new text entry
  */
 function _fewchars($text)
 {
-	$matches = '/\s([a-z0-9\:]{0,2})\s/';
+	$matches = '/\s([a-zA-Z0-9]{1,3}[^&#39;])(\s)/';
 
-	return preg_replace($matches, '&nbsp;$1&nbsp;', $text);
+	return preg_replace($matches, '&nbsp;$1$2', $text);
 }
 
 
@@ -113,11 +125,11 @@ function _fewchars($text)
  *
  * Adds a space before some signs for French language
  *
- * @param $text  string The text entry
- * @param $lang  string French country code
+ * @param  $text string The text entry
+ * @param  $lang string The country code
  * @return $text string The new text entry
  */
-function _punctuation($text, $lang = null)
+function _punctuation($text , $lang = null)
 {
 
 	if ($lang === 'fr' or $lang === 'fr-FR') {
@@ -136,16 +148,26 @@ function _punctuation($text, $lang = null)
  * Puts a &thinsp; before and after an &ndash or &mdash;
  * Change sinple dash by endashes instead.
  *
- * @param  $text string The text entry
- * @return $text string The new text entry
+ * @param  $text string   The text entry
+ * @param  $lang string   The country code
+ * @param  $force boolean Choice for hair spaces or HTML tags
+ * @return $text string   The new text entry
  */
-function _dash($text, $force)
+function _dash($text, $lang, $force)
 {
 
-	$thin = $force == false ? '–&#x0202F;$3&#x0202F;–$6' : '<span class="thinsp">–&#8202;$3&#8202;–</span>$6';
+	$sign = '—';
+	$thin = $force == false ? $sign.'$3'.$sign.'$6' : '<span class="thinsp">'.$sign.'$3'.$sign.'</span>$6';
+	if ($lang == 'fr' or $lang == 'fr-FR') {
+		$sign = '–';
+	$thin = $force == false ? $sign.'&#x0202F;$3&#x0202F;'.$sign.'$6' : '<span class="thinsp">'.$sign.'&#8202;$3&#8202;'.$sign.'</span>$6';
+	}
+
+	//$thin = $force == false ? $sign.'&#x0202F;$3&#x0202F;'.$sign.'$6' : '<span class="thinsp">'.$sign.'&#8202;$3&#8202;'.$sign.'</span>$6';
 	$matches = '/(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)?(\w*)(\s|&nbsp;|&thinsp;)?(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)?/sU';
 
 	return preg_replace($matches, $thin, $text);
 
 }
+
 
