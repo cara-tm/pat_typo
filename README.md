@@ -1,5 +1,5 @@
 # pat_typo
-Typographic enhancements for titles in Textpattern CMS. The same processes in use within some online french newspaper websites.
+Typographic enhancements for titles in Textpattern CMS. The same processes in use within some online french newspaper websites (e.g. courtesy © Libération: http://bit.ly/2EatTuE).
 
 ![Without plugin](https://raw.githubusercontent.com/cara-tm/pat_typo/master/without-plugin.png "Without plugin")
 
