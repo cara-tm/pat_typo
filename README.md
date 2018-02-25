@@ -3,12 +3,13 @@ Typographic enhancements for titles in Textpattern CMS. The same processes in us
 
 ![Without plugin](https://raw.githubusercontent.com/cara-tm/pat_typo/master/without-plugin.png "Without plugin")
 
-A plugin for titles where Textpattern can't improves the peculiarities of the French language that adds some enhancements in order to avoid the typographic widow effect in responsive design context:
+A plugin for titles where Textpattern can't improves the peculiarities of the French language (or gives some solutions for english) that adds some enhancements in order to avoid the typographic widow effect in responsive design context:
 
-* injects hair spaces after the opening and before the closing french quotes "guillemets";
-* injects non breaking spaces arround small words (to improve);
-* injects non breaking spaces before colons, exclamation points, question marks, semi colons even if omitted;
-* replaces simple dashes to endashes.
+* provides a in build generator for automatical creation of real french quote signs or real english quote signs based on a simple writting convention;
+* injects thin spaces after the opening and before the closing french quotes "guillemets";
+* injects non breaking spaces arround small (3 letters width) words (to be improved);
+* injects non breaking spaces before colons, exclamation points, question marks, ~~semi colons~~ (currently: research in progress to find a solution) even if omitted for French language;
+* replaces simple keyboard dashes (`-`) to en dashes (`–`), for French users, or converts it to em dashes (`—`) for English ones.
 
 ## Usage
 
