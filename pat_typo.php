@@ -62,8 +62,8 @@ function pat_typo($atts, $thing = null)
  */
 function _numerals($text)
 {
-	$matches = array('1/2', '1/3', '1/4', '0/00', '/2', '/3');
-	$numbers = array('½', '¼', '¾', '‰', '²', '³');
+	$matches = array('1/2', '1/3', '1/4', '3/4', '0/00', '/2', '/3');
+	$numbers = array('½', '&frac13;', '¼', '¾', '‰', '²', '³');
 
 	return str_replace($matches, $numbers, $text);
 
