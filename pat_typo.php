@@ -60,12 +60,12 @@ function pat_typo($atts, $thing = null)
  * @param $text  string The text entry
  * @return $text string The new text entry
  */
-function _fractions($text)
+function _numerals($text)
 {
 	$matches = array('1/2', '1/3', '1/4', '0/00', '/2', '/3');
-	$numerals = array('½', '¼', '¾', '‰', '²', '³');
+	$numbers = array('½', '¼', '¾', '‰', '²', '³');
 
-	return str_replace($matches, $numerals, $text);
+	return str_replace($matches, $numbers, $text);
 
 }
 
