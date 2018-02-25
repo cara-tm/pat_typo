@@ -7,7 +7,7 @@
  * @type:    Public
  * @prefs:   no
  * @order:   5
- * @version: 0.2.0
+ * @version: 0.2.1
  * @license: GPLv2
 */
 
@@ -40,6 +40,7 @@ function pat_typo($atts, $thing = null)
 	), $atts));
 
 	//$text = _fewchars($text);
+	$text = _numerals($text);
 	$text = _punctuation($text, $lang);
 	$text = _widont($text, $no_widow);
 	$text = _first_signs($text , $lang, $force);
@@ -49,6 +50,63 @@ function pat_typo($atts, $thing = null)
 	return $text;
 
 }
+
+
+/**
+ * _numerals
+ *
+ * Converts some numbers
+ *
+ * @param $text  string The text entry
+ * @return $text string The new text entry
+ */
+function _fractions($text)
+{
+	$matches = array('1/2', '1/3', '1/4', '0/00', '/2', '/3');
+	$numerals = array('½', '¼', '¾', '‰', '²', '³');
+
+	return str_replace($matches, $numerals, $text);
+
+}
+
+
+/**
+ * _fewchars
+ *
+ * Surrounds few characters with non breaking spaces
+ *
+ * @param $text  string The text entry
+ * @return $text string The new text entry
+ */
+function _fewchars($text)
+{
+	$matches = '/\s([a-zA-Z0-9]{1,3}[^&#39;])(\s)/';
+
+	return preg_replace($matches, '&nbsp;$1$2', $text);
+}
+
+
+/**
+ * _punctuation
+ *
+ * Adds a space before some signs for French language
+ *
+ * @param  $text string The text entry
+ * @param  $lang string The country code
+ * @return $text string The new text entry
+ */
+function _punctuation($text , $lang = null)
+{
+
+	if ($lang === 'fr' or $lang === 'fr-FR') {
+		$pattern = '/(\s)?(:|\?|\!|\%|\€)/im';
+		return preg_replace($pattern, '&nbsp;$2', $text);
+	} else {
+		return $text;
+	}
+
+}
+
 
 /**
  * widont
@@ -99,44 +157,6 @@ function _last_signs($text, $lang, $force)
 		$sign = $force == false ? '”$2' : '<span class="thinsp">”</span>$2';
 		$matches = '/(\/&#34;|\/")(\s?)/';
 		return preg_replace($matches, $sign, $text);
-	}
-
-}
-
-
-/**
- * _fewchars
- *
- * Surrounds few characters with non breaking spaces
- *
- * @param $text  string The text entry
- * @return $text string The new text entry
- */
-function _fewchars($text)
-{
-	$matches = '/\s([a-zA-Z0-9]{1,3}[^&#39;])(\s)/';
-
-	return preg_replace($matches, '&nbsp;$1$2', $text);
-}
-
-
-/**
- * _punctuation
- *
- * Adds a space before some signs for French language
- *
- * @param  $text string The text entry
- * @param  $lang string The country code
- * @return $text string The new text entry
- */
-function _punctuation($text , $lang = null)
-{
-
-	if ($lang === 'fr' or $lang === 'fr-FR') {
-		$pattern = '/(\s)?(:|\?|\!|\%|\€)/im';
-		return preg_replace($pattern, '&nbsp;$2', $text);
-	} else {
-		return $text;
 	}
 
 }
