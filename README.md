@@ -13,6 +13,21 @@ A plugin for titles where Textpattern can't improves the peculiarities of the Fr
 * converts specific numerals to typographic equivalents: 1/2 to ½ 1/3 to ⅓ 1/4 to ¼ 3/4 to ¾ 0/00 to ‰ and, for these writting conventions: `/1` to ¹ `/2` to ² `/3` to ³ superscript numbers (v 0.3.0 onwards);
 * support for the "inclusive notation" (optional, v 0.3.0 onwards). Could be a SEO problem depending on the use.
 
+
+## Performance considerations
+
+This plugin works on the fly but do not saves its results into the Textpattern corresponding table because of the numerous changes applyied onto titles whose display could be a little bit confusing for writers. Even if we didn't notice notable slowdowns within website renderings, you could take advantages to adopt a cache system. We suggest you the use of the `etc_cache` plugin (http://www.iut-fbleau.fr/projet/etc/index.php?id=52).
+
+e.g. Into a page template:
+
+    <txp:etc_cache id="articles">
+        <txp:article form="default" listform="default" limit="10" />
+    </txp:etc_cache>
+
+and the corresponding `default` form:
+
+    <h2><txp:pat_typo force="0" no_widow="1" lang="fr" inclusive="1" /></h2>
+
 ## Usage
 
 In replacement of the native `<txp:title />`tag:
