@@ -100,14 +100,14 @@ function _fewchars($text)
  */
 function _punctuation($text , $lang = null)
 {
-
 	if ($lang === 'fr' or $lang === 'fr-FR') {
+		$pos = '/\s?[^&#\w;](\w+)(\;)/im';
+		$temp = preg_replace($pos, ' $1&nbsp;$2', $text);
 		$pattern = '/(\s)?(:|\?|\!|\%|\€)/im';
-		return preg_replace($pattern, '&nbsp;$2', $text);
+		return preg_replace($pattern, '&nbsp;$2', $temp);
 	} else {
 		return $text;
 	}
-
 }
 
 
