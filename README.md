@@ -10,7 +10,7 @@ A plugin for titles where Textpattern can't improves the peculiarities of the Fr
 * injects non breaking spaces arround small (3 letters width) words (to be improved);
 * injects non breaking spaces before colons, exclamation points, question marks, semi colons (v 0.3.0 onwards) even if omitted for French language;
 * replaces simple keyboard dashes (`-`) to en dashes (`–`), for French users, or converts it to em dashes (`—`) for English ones;
-* converts specific numérals to typographic equivalents: 1/2 to ½ 1/3 to ⅓ 1/4 to ¼ 3/4 to ¾ 0/00 to ‰ and, for these writting conventions: `/1` to ¹ `/2` to ² `/3` to ³;
+* converts specific numerals to typographic equivalents: 1/2 to ½ 1/3 to ⅓ 1/4 to ¼ 3/4 to ¾ 0/00 to ‰ and, for these writting conventions: `/1` to ¹ `/2` to ² `/3` to ³ superscript numbers;
 * support for the "inclusive notation" (optional, v 0.3.0 onwards).
 
 ## Usage
