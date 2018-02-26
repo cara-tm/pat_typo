@@ -68,7 +68,7 @@ function _numerals($text)
 	$temp = preg_replace($pos, '$1', $text);
 
 	$matches = array('1/2', '1/3', '1/4', '3/4', '0/00', '/1', '/2', '/3');
-	$numbers = array('½', '&frac13;', '¼', '¾', '‰', '¹', '²', '³');
+	$numbers = array('½', '⅓', '¼', '¾', '‰', '¹', '²', '³');
 
 	return str_replace($matches, $numbers, $temp);
 
