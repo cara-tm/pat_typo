@@ -24,7 +24,7 @@ In replacement of the native `<txp:title />`tag:
 * `no_widow` boolean (optional): same feature as the build in, if set to `true` (or `1`) avoid widow effect on last word or sign. Default: `false`.
 * `lang` string (optional): country code for French language in order to apply specific typographic rules. Default: user preferences language.
 * `force` boolean (optional): allow to switch from HEX encoding non breaking hair spaces to HTML tags markup. Default: false (`0`) HEX non breaking hair spaces.
-* ìnclusive` boolean (optional): supports the "inclusive notation" where dots are replaced by bull signs into words. Default: false (`0`) (v 0.3.0 onwards).
+* `inclusive` boolean (optional): supports the "_inclusive notation_" where dots are replaced by bull signs into words. Default: false (`0`) (v 0.3.0 onwards).
 
 ## Typography helper
 
