@@ -10,25 +10,26 @@ A plugin for titles where Textpattern can't improves the peculiarities of the Fr
 * injects non breaking spaces arround small (3 letters width) words (to be improved);
 * injects non breaking spaces before colons, exclamation points, question marks, semi colons (v 0.3.0 onwards) even if omitted for French language;
 * replaces simple keyboard dashes (`-`) to en dashes (`–`), for French users, or converts it to em dashes (`—`) for English ones;
-* converts specific numerals to typographic equivalents: 1/2 to ½ 1/3 to ⅓ 1/4 to ¼ 3/4 to ¾ 0/00 to ‰ and, for these writting conventions: `/1` to ¹ `/2` to ² `/3` to ³ superscript numbers;
+* converts specific numerals to typographic equivalents: 1/2 to ½ 1/3 to ⅓ 1/4 to ¼ 3/4 to ¾ 0/00 to ‰ and, for these writting conventions: `/1` to ¹ `/2` to ² `/3` to ³ superscript numbers (v 0.3.0 onwards);
 * support for the "inclusive notation" (optional, v 0.3.0 onwards).
 
 ## Usage
 
 In replacement of the native `<txp:title />`tag:
 
-    <txp:pat_typo no_widow="" lang="" force="" />
+    <txp:pat_typo no_widow="" lang="" force="" inclusive="" />
 
 ## Attributes
 
 * `no_widow` boolean (optional): same feature as the build in, if set to `true` (or `1`) avoid widow effect on last word or sign. Default: `false`.
 * `lang` string (optional): country code for French language in order to apply specific typographic rules. Default: user preferences language.
-* `force` boolean (optional): allow to switch from HEX encoding non breaking hair spaces to HTML tags markup. Default: false (`0`) HEX non breaking hair spaces. 
+* `force` boolean (optional): allow to switch from HEX encoding non breaking hair spaces to HTML tags markup. Default: false (`0`) HEX non breaking hair spaces.
+* ìnclusive` boolean (optional): supports the "inclusive notation" where dots are replaced by bull signs into words. Default: false (`0`) (v 0.3.0 onwards).
 
 ## Typography helper
 
 Depending of the `lang`attribute value, automatic conversion to real French quotes signs with this simple typographic convention: `"/my word/"` that will be displayed as this: `« my word »` (signs surrounding with hair spaces) or `“my word”` for English users.
-Automatic conversion for keyboard `-` signs to en dashes (`–`) for French users or em dashes (`—`) for English ones.
+Automatic conversion for keyboard `-` signs to en dashes (`–`) for French users or em dashes (`—`) for English ones. Converts `/1` to ¹ `/2` to ² and `/3` to ³ superscript numbers.
 
 ## Additional CSS rules
 
