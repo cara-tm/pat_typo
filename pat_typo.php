@@ -33,10 +33,11 @@ function pat_typo($atts, $thing = null)
 {
 
 	extract(lAtts(array(
-		'text'     => title(array('no_widow' => 0)),
-		'no_widow' => false,
-		'lang'     => get_pref('language', TEXTPATTERN_DEFAULT_LANG, true),
-		'force'    => false,
+		'text'      => title(array('no_widow' => 0)),
+		'no_widow'  => false,
+		'lang'      => get_pref('language', TEXTPATTERN_DEFAULT_LANG, true),
+		'force'     => false,
+		'inclusive' => false,
 	), $atts));
 
 	//$text = _fewchars($text);
@@ -46,6 +47,7 @@ function pat_typo($atts, $thing = null)
 	$text = _first_signs($text , $lang, $force);
 	$text = _last_signs($text , $lang, $force);
 	$text = _dash($text, $lang, $force);
+	$text = _inclusive($text, $inclusive);
 
 	return $text;
 
@@ -194,3 +196,22 @@ function _dash($text, $lang, $force)
 }
 
 
+/**
+ * _inclusive
+ *
+ * Adopts the "inclusive" notation for French users only
+ *
+ * @param $text      string  The text content
+ * @param $inclusive boolean Choose to adopt or not the "inclusive notation"
+ * @return $text     string  The new text content
+ *
+ */
+function _inclusive($text, $inclusive)
+{
+	if (true == $inclusive) {
+		$matches = '/(\w+)\.(\w+)?/im';
+		return preg_replace($matches, '$1•$2', $text);;
+	} else {
+		return $text;
+	}
+}
