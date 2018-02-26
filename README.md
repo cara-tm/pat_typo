@@ -8,8 +8,9 @@ A plugin for titles where Textpattern can't improves the peculiarities of the Fr
 * provides a in build generator for automatical creation of real french quote signs or real english quote signs based on a simple writting convention;
 * injects thin spaces after the opening and before the closing french quotes "guillemets";
 * injects non breaking spaces arround small (3 letters width) words (to be improved);
-* injects non breaking spaces before colons, exclamation points, question marks, ~~semi colons~~ (currently: research in progress to find a solution) even if omitted for French language;
-* replaces simple keyboard dashes (`-`) to en dashes (`–`), for French users, or converts it to em dashes (`—`) for English ones.
+* injects non breaking spaces before colons, exclamation points, question marks, semi colons (v 0.3.0 onwards) even if omitted for French language;
+* replaces simple keyboard dashes (`-`) to en dashes (`–`), for French users, or converts it to em dashes (`—`) for English ones;
+* support for the "inclusive notation" (optional, v 0.3.0 onwards).
 
 ## Usage
 
