@@ -7,7 +7,7 @@
  * @type:    Public
  * @prefs:   no
  * @order:   5
- * @version: 0.2.1
+ * @version: 0.3.0
  * @license: GPLv2
 */
 
@@ -62,10 +62,13 @@ function pat_typo($atts, $thing = null)
  */
 function _numerals($text)
 {
-	$matches = array('1/2', '1/3', '1/4', '3/4', '0/00', '/2', '/3');
-	$numbers = array('½', '&frac13;', '¼', '¾', '‰', '²', '³');
+	$pos = '/\s?(\/1|\/2|\/3)/';
+	$temp = preg_replace($pos, '$1', $text);
 
-	return str_replace($matches, $numbers, $text);
+	$matches = array('1/2', '1/3', '1/4', '3/4', '0/00', '/1', '/2', '/3');
+	$numbers = array('½', '&frac13;', '¼', '¾', '‰', '¹', '²', '³');
+
+	return str_replace($matches, $numbers, $temp);
 
 }
 
