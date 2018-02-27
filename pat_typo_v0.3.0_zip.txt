@@ -1,0 +1,70 @@
+# Name: pat_typo v0.3.0 (compressed)
+# Type: Admin/Public plugin
+# Typographic enhancements for titles in Textpattern CMS
+# Author: Patrick LEFEVRE
+# URL: https://github.com/cara-tm/pat_typo
+# Recommended load order: 5
+
+# .....................................................................
+# This is a plugin for Textpattern CMS - http://textpattern.com/
+# To install: textpattern > admin > plugins
+# Paste the following text into the 'Install plugin' box:
+# .....................................................................
+
+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
