@@ -37,7 +37,7 @@ and the corresponding `default` form:
 
 In replacement of the native `<txp:title />`tag:
 
-    <txp:pat_typo no_widow="" lang="" force="" inclusive="" />
+    <txp:pat_typo no_widow="" lang="" force="" inclusive="" preview_only="" />
 
 ## Attributes
 
@@ -45,6 +45,7 @@ In replacement of the native `<txp:title />`tag:
 * `lang` string (optional): country code for French language in order to apply specific typographic rules. Default: user preferences language.
 * `force` boolean (optional): allow to switch from HEX encoding non breaking hair spaces to HTML tags markup. Default: false (`0`) HEX non breaking hair spaces.
 * `inclusive` boolean (optional): supports the "_inclusive notation_" where dots are replaced by bull signs into words. Default: false (`0`) (v 0.3.0 onwards).
+* `preview_only` boolean (optional): if set to `true` apply changes only on article preview. Default: true (`1`) depending on the plugin parameter "_pat_typo_preview_only_"_ radio button available into the Textpattern preferences panel.
 
 ## Typography helper
 
