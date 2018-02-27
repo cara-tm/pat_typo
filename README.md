@@ -16,7 +16,8 @@ A plugin for titles where Textpattern can't improves the peculiarities of the Fr
 
 ## Performance considerations
 
-This plugin works on the fly but do not saves its results into the Textpattern corresponding table because of the numerous changes applyied onto titles whose display could be a little bit confusing for writers. Even if we didn't notice notable slowdowns within website renderings, you could take advantages to adopt a cache system. We suggest you the use of the `etc_cache` plugin (http://www.iut-fbleau.fr/projet/etc/index.php?id=52).
+This plugin works on the fly but do not saves its results into the Textpattern corresponding table because of the numerous changes applyied onto titles whose display could be a little bit confusing for writers. Even if we didn't notice notable slowdowns within website renderings, you could take advantages to adopt a cache system. We suggest you the use of the `etc_cache` plugin (http://www.iut-fbleau.fr/projet/etc/index.php?id=52)... or (see Advice below)
+
 
 e.g. Into a page template:
 
@@ -27,6 +28,10 @@ e.g. Into a page template:
 and the corresponding `default` form:
 
     <h2><txp:pat_typo force="0" no_widow="1" lang="fr" inclusive="1" /></h2>
+
+## Advice
+
+...Authors can preview their draft articles then copy/paste the resulting titles in replacement of the original ones (without all the special writing conventions).
 
 ## Usage
 
