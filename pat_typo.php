@@ -210,7 +210,7 @@ function _inclusive($text, $inclusive)
 {
 	if (true == $inclusive) {
 		$matches = '/(\w+)\.(\w+)?/im';
-		return preg_replace($matches, '$1•$2', $text);;
+		return preg_replace($matches, '$1<span class="bull">•</spaan>$2', $text);;
 	} else {
 		return $text;
 	}
