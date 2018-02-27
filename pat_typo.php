@@ -22,6 +22,16 @@ if (class_exists('\Textpattern\Tag\Registry')) {
 
 
 /**
+ * This plugin lifecycle.
+ */
+if (txpinterface == 'admin')
+{
+	register_callback('pat_typo_prefs', 'prefs', '', 1);
+	register_callback('pat_typo_cleanup', 'plugin_lifecycle.pat_typo', 'deleted');
+}
+
+
+/**
  * Main plugin function
  *
  * @param  $text   string  The text content
@@ -31,26 +41,42 @@ if (class_exists('\Textpattern\Tag\Registry')) {
  */
 function pat_typo($atts, $thing = null)
 {
-
 	extract(lAtts(array(
-		'text'      => title(array('no_widow' => 0)),
-		'no_widow'  => false,
-		'lang'      => get_pref('language', TEXTPATTERN_DEFAULT_LANG, true),
-		'force'     => false,
-		'inclusive' => false,
+		'text'         => title(array('no_widow' => 0)),
+		'no_widow'     => false,
+		'lang'         => get_pref('language', TEXTPATTERN_DEFAULT_LANG, true),
+		'force'        => false,
+		'inclusive'    => false,
+		'preview_only' => true,
 	), $atts));
 
-	//$text = _fewchars($text);
-	$text = _numerals($text);
-	$text = _punctuation($text, $lang);
-	$text = _widont($text, $no_widow);
-	$text = _first_signs($text , $lang, $force);
-	$text = _last_signs($text , $lang, $force);
-	$text = _dash($text, $lang, $force);
-	$text = _inclusive($text, $inclusive);
+	// List of functions to load:
+	if (true == $preview_only or true == get_pref('pat_typo_preview_only')) {
+
+		if (gps('txpreview')) {
+			//$text = _fewchars($text);
+			$text =  _numerals($text);
+			$text = _punctuation($text, $lang);
+			$text = _widont($text, $no_widow);
+			$text = _first_signs($text , $lang, $force);
+			$text = _last_signs($text , $lang, $force);
+			$text = _dash($text, $lang, $force);
+			$text = _inclusive($text, $inclusive);
+		}
+
+	} elseif (false == $preview_only or false == get_pref('pat_typo_proview_only')) {
+
+		//$text = _fewchars($text);
+		$text = _numerals($text);
+		$text = _punctuation($text, $lang);
+		$text = _widont($text, $no_widow);
+		$text = _first_signs($text , $lang, $force);
+		$text = _last_signs($text , $lang, $force);
+		$text = _dash($text, $lang, $force);
+		$text = _inclusive($text, $inclusive);
+	}
 
 	return $text;
-
 }
 
 
@@ -64,6 +90,7 @@ function pat_typo($atts, $thing = null)
  */
 function _numerals($text)
 {
+
 	$pos = '/\s?(\/1|\/2|\/3)/';
 	$temp = preg_replace($pos, '$1', $text);
 
@@ -71,7 +98,6 @@ function _numerals($text)
 	$numbers = array('½', '⅓', '¼', '¾', '‰', '¹', '²', '³');
 
 	return str_replace($matches, $numbers, $temp);
-
 }
 
 
@@ -85,9 +111,11 @@ function _numerals($text)
  */
 function _fewchars($text)
 {
-	$matches = '/\s([a-zA-Z0-9]{1,3}[^&#39;])(\s)/';
+	//$matches = '/(\s)([a-zA-Z0-9]{1,3}[^&#39;])(\s)/';
+$matches = '/(\s)([a-zA-Z0-9]{0,3}?[^&#39;|\»|\!|\–|\:|\«])(\s)/';
 
-	return preg_replace($matches, '&nbsp;$1$2', $text);
+	//return preg_replace($matches, '&nbsp;$2$3', $text);
+return preg_replace($matches, '&nbsp;$2$3', $text);
 }
 
 
@@ -163,7 +191,6 @@ function _last_signs($text, $lang, $force)
 		$matches = '/(\/&#34;|\/")(\s?)/';
 		return preg_replace($matches, $sign, $text);
 	}
-
 }
 
 
@@ -180,19 +207,15 @@ function _last_signs($text, $lang, $force)
  */
 function _dash($text, $lang, $force)
 {
-
 	$sign = '—';
 	$thin = $force == false ? $sign.'$3'.$sign.'$6' : '<span class="thinsp">'.$sign.'$3'.$sign.'</span>$6';
 	if ($lang == 'fr' or $lang == 'fr-FR') {
 		$sign = '–';
 	$thin = $force == false ? $sign.'&#x0202F;$3&#x0202F;'.$sign.'$6' : '<span class="thinsp">'.$sign.'&#8202;$3&#8202;'.$sign.'</span>$6';
 	}
-
 	//$thin = $force == false ? $sign.'&#x0202F;$3&#x0202F;'.$sign.'$6' : '<span class="thinsp">'.$sign.'&#8202;$3&#8202;'.$sign.'</span>$6';
 	$matches = '/(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)?(\w*)(\s|&nbsp;|&thinsp;)?(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)?/sU';
-
 	return preg_replace($matches, $thin, $text);
-
 }
 
 
@@ -214,4 +237,35 @@ function _inclusive($text, $inclusive)
 	} else {
 		return $text;
 	}
+}
+
+
+/**
+ * This plugin preferences
+ *
+ * @param
+ * @return SQL Plugin preference field
+ */
+function pat_typo_prefs()
+{
+	global $textarray;
+
+	$textarray['pat_typo_preview_only'] = 'Enable pat_typo on article preview only?';
+
+	if (!safe_field('name', 'txp_prefs', "name='pat_typo_preview_only'"))
+	{
+		safe_insert('txp_prefs', "name='pat_typo_preview_only', val='1', type=1, event='admin', html='yesnoradio', position=30");
+	}
+}
+
+
+/**
+ * This plugin cleanup on deletion
+ *
+ * @param
+ * @return SQL Safe delete field
+ */
+function pat_typo_cleanup()
+{
+	safe_delete('txp_prefs', "name='pat_typo_preview_only'");
 }
