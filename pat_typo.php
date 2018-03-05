@@ -1,13 +1,13 @@
 <?php
 /**
- * Typographic enhancements for titles in Textpattern CMS
+ * Typographic enhancements for Textpattern CMS
  *
  * @author:  Patrick LEFEVRE.
  * @link:    https://github.com/cara-tm/pat_typo
- * @type:    Public
+ * @type:    Admin + Public
  * @prefs:   no
  * @order:   5
- * @version: 0.3.0
+ * @version: 0.3.1
  * @license: GPLv2
 */
 
@@ -41,8 +41,10 @@ if (txpinterface == 'admin')
  */
 function pat_typo($atts, $thing = null)
 {
+	global $_proceed;
+
 	extract(lAtts(array(
-		'text'         => title(array('no_widow' => 0)),
+		'text'         => 'title',
 		'no_widow'     => false,
 		'lang'         => get_pref('language', TEXTPATTERN_DEFAULT_LANG, true),
 		'force'        => false,
@@ -50,33 +52,69 @@ function pat_typo($atts, $thing = null)
 		'preview_only' => true,
 	), $atts));
 
+	// Global rendering value
+	$_proceed = true;
+
+	// Text content choice
+	if ($text == 'title') {
+		$text = title(array('no_widow' => 0));
+	} else {
+		$_proceed = false;
+		$text = body(array());
+	}
+
 	// List of functions to load:
 	if (true == $preview_only or true == get_pref('pat_typo_preview_only')) {
 
 		if (gps('txpreview')) {
-			//$text = _fewchars($text);
+
+			$text =  _errors($text);
 			$text =  _numerals($text);
 			$text = _punctuation($text, $lang);
+			$text = _smallwords($text);
 			$text = _widont($text, $no_widow);
 			$text = _first_signs($text , $lang, $force);
 			$text = _last_signs($text , $lang, $force);
-			$text = _dash($text, $lang, $force);
+			$text = _dash($text, $force);
 			$text = _inclusive($text, $inclusive);
+			
 		}
 
 	} elseif (false == $preview_only or false == get_pref('pat_typo_proview_only')) {
 
-		//$text = _fewchars($text);
+		$text =  _errors($text);
 		$text = _numerals($text);
 		$text = _punctuation($text, $lang);
+		$text = _smallwords($text);
 		$text = _widont($text, $no_widow);
 		$text = _first_signs($text , $lang, $force);
 		$text = _last_signs($text , $lang, $force);
-		$text = _dash($text, $lang, $force);
+		$text = _dash($text, $force);
 		$text = _inclusive($text, $inclusive);
-	}
 
-	return $text;
+		
+	}
+		return $text;
+
+}
+
+
+/**
+ * _errors
+ *
+ * Remove some writing errors
+ *
+ * @param $text string  The text entry
+ * @return $text string The new text entry
+*/
+function _errors($text)
+{
+	$first = '/(\()\s+?/im';
+	$temp = preg_replace($first, '$1', $text);
+	$matches = '/\s+?(\,|\.|\))/im';
+
+	return preg_replace($matches, '$1', $temp);
+
 }
 
 
@@ -94,28 +132,11 @@ function _numerals($text)
 	$pos = '/\s?(\/1|\/2|\/3)/';
 	$temp = preg_replace($pos, '$1', $text);
 
+	// Note: Textile use this '[1/2]' convention instead but do not render '[1/3]'
 	$matches = array('1/2', '1/3', '1/4', '3/4', '0/00', '/1', '/2', '/3');
 	$numbers = array('½', '⅓', '¼', '¾', '‰', '¹', '²', '³');
 
 	return str_replace($matches, $numbers, $temp);
-}
-
-
-/**
- * _fewchars
- *
- * Surrounds few characters with non breaking spaces
- *
- * @param $text  string The text entry
- * @return $text string The new text entry
- */
-function _fewchars($text)
-{
-	//$matches = '/(\s)([a-zA-Z0-9]{1,3}[^&#39;])(\s)/';
-$matches = '/(\s)([a-zA-Z0-9]{0,3}?[^&#39;|\»|\!|\–|\:|\«])(\s)/';
-
-	//return preg_replace($matches, '&nbsp;$2$3', $text);
-return preg_replace($matches, '&nbsp;$2$3', $text);
 }
 
 
@@ -128,13 +149,37 @@ return preg_replace($matches, '&nbsp;$2$3', $text);
  * @param  $lang string The country code
  * @return $text string The new text entry
  */
-function _punctuation($text , $lang = null)
+function _punctuation($text , $lang)
 {
 	if ($lang === 'fr' or $lang === 'fr-FR') {
-		$pos = '/\s?[^&#\w;](\w+)(\;)/im';
-		$temp = preg_replace($pos, ' $1&nbsp;$2', $text);
-		$pattern = '/(\s)?(:|\?|\!|\%|\€)/im';
-		return preg_replace($pattern, '&nbsp;$2', $temp);
+		// Semi colons but not hellips
+		$pos = '/([^&\w+;][a-zA-Z\)»\?\!]+)(\s+)?([\;])/im';
+		$temp = preg_replace($pos, '$1&nbsp;;', $text);
+		// All others punctuation signs
+		$pattern = '/(\s+)?(\:|\?|\!|\%|\€|km|kg|mg|kW)/im';
+		return preg_replace($pattern, '&#x0202F;$2', $temp);
+	} else {
+		// All other languages than French
+		return $text;
+	}
+}
+
+
+/**
+ * _smallwords
+ *
+ * Surrounds few characters with non breaking spaces
+ *
+ * @param $text  string The text entry
+ * @return $text string The new text entry
+ */
+function _smallwords($text)
+{
+	global $_proceed;
+
+	if ($_proceed) {
+		$matches = '/(\s)([a-zA-Z0-9]{0,3}?[^&#39;|\»|\!|\–|\:|\«])(\s)/';
+		return preg_replace($matches, '&nbsp;$2$3', $text);
 	} else {
 		return $text;
 	}
@@ -152,7 +197,7 @@ function _punctuation($text , $lang = null)
  */
 function _widont($text, $no_widow)
 {
-	return (true == $no_widow ? preg_replace( '/(\s)([^\s\»]+)\s*(\s)?$/', '&#160;$2', $text) : $text);
+	return (true == $no_widow ? preg_replace( '/(\s)([^\s\»\&]+)\s*(\s)?$/', '&#160;$2', $text) : $text);
 }
 
 
@@ -168,29 +213,43 @@ function _widont($text, $no_widow)
  */
 function _first_signs($text, $lang, $force)
 {
-	if ($lang == 'fr' or $lang == 'fr-FR') {
-		$thin = ($force == false ? '«&#x0202F;' : '<span class="thinsp">«&#8202;</span>');
-		// Starting quotes
-		$matches = '/(«|&#34;\/|"\/)(\s?)/';
-		return preg_replace($matches, $thin, $text);
+	global $_proceed;
+
+	if ($_proceed) {
+		if ($lang == 'fr' or $lang == 'fr-FR') {
+			$thin = ($force == false ? '«&#x0202F;' : '<span class="thinsp">«&#8202;</span>');
+			// Starting quotes
+			$matches = '/(«|&#34;\/|"\/)(\s?)/';
+			return preg_replace($matches, $thin, $text);
+		} else {
+			$sign = ($force == false ? '“$2' : '<span class="thinsp">“</span>$2');
+			$matches = '/(&#34;\/|"\/)(\s?)/';
+			return preg_replace($matches, $sign, $text);
+		}
 	} else {
-		$sign = ($force == false ? '“$2' : '<span class="thinsp">“</span>$2');
-		$matches = '/(&#34;\/|"\/)(\s?)/';
-		return preg_replace($matches, $sign, $text);
+		return $text;
 	}
+	
 }
 function _last_signs($text, $lang, $force)
 {
-	if ($lang == 'fr' or $lang == 'fr-FR') {
-		$thin = $force == false ? '&#x0202F;»' : '<span class="thinsp">&#8202;»</span>';
-		// Final quotes
-		$matches = '/(\s?)(»|\/&#34;|\/")/';
-		return preg_replace($matches, $thin, $text);
+	global $_proceed;
+
+	if ($_proceed) {
+		if ($lang == 'fr' or $lang == 'fr-FR') {
+			$thin = $force == false ? '&#x0202F;»' : '<span class="thinsp">&#8202;»</span>';
+			// Final quotes
+			$matches = '/(\s?)(»|\/&#34;|\/")/';
+			return preg_replace($matches, $thin, $text);
+		} else {
+			$sign = $force == false ? '”$2' : '<span class="thinsp">”</span>$2';
+			$matches = '/(\/&#34;|\/")(\s?)/';
+			return preg_replace($matches, $sign, $text);
+		}
 	} else {
-		$sign = $force == false ? '”$2' : '<span class="thinsp">”</span>$2';
-		$matches = '/(\/&#34;|\/")(\s?)/';
-		return preg_replace($matches, $sign, $text);
+		return $text;
 	}
+
 }
 
 
@@ -205,16 +264,11 @@ function _last_signs($text, $lang, $force)
  * @param  $force boolean Choice for hair spaces or HTML tags
  * @return $text string   The new text entry
  */
-function _dash($text, $lang, $force)
+function _dash($text, $force)
 {
-	$sign = '—';
-	$thin = $force == false ? $sign.'$3'.$sign.'$6' : '<span class="thinsp">'.$sign.'$3'.$sign.'</span>$6';
-	if ($lang == 'fr' or $lang == 'fr-FR') {
-		$sign = '–';
-	$thin = $force == false ? $sign.'&#x0202F;$3&#x0202F;'.$sign.'$6' : '<span class="thinsp">'.$sign.'&#8202;$3&#8202;'.$sign.'</span>$6';
-	}
-	//$thin = $force == false ? $sign.'&#x0202F;$3&#x0202F;'.$sign.'$6' : '<span class="thinsp">'.$sign.'&#8202;$3&#8202;'.$sign.'</span>$6';
-	$matches = '/(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)?(\w*)(\s|&nbsp;|&thinsp;)?(&mdash;|&ndash;|&#x2013;|&#8211;|&#x2014;|&#8212;|—|–|-)(\s|&nbsp;|&thinsp;)?/sU';
+	$thin = ($force == false ? '&#x0202F;&#8212;' : '&nbsp;<span class="thinsp">&#8212;</span> ');
+	$matches = '/(\s+)?(&#8212;|-|–)(\s+)?/';
+
 	return preg_replace($matches, $thin, $text);
 }
 
@@ -232,8 +286,8 @@ function _dash($text, $lang, $force)
 function _inclusive($text, $inclusive)
 {
 	if (true == $inclusive) {
-		$matches = '/(\w+)\.(\w+)?/im';
-		return preg_replace($matches, '$1<span class="bull">•</span>$2', $text);
+		$matches = '/(\.)(\p{L}+)/sU';
+		return preg_replace($matches, '<span class="bull">&#8288;•&#8288;</span>$2', $text);
 	} else {
 		return $text;
 	}
@@ -269,3 +323,4 @@ function pat_typo_cleanup()
 {
 	safe_delete('txp_prefs', "name='pat_typo_preview_only'");
 }
+
