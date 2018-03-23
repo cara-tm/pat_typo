@@ -1,13 +1,13 @@
 <?php
 /**
- * Typographic enhancements for Textpattern CMS
+ * Typographic enhancements for titles in Textpattern CMS
  *
  * @author:  Patrick LEFEVRE.
  * @link:    https://github.com/cara-tm/pat_typo
  * @type:    Admin + Public
  * @prefs:   no
  * @order:   5
- * @version: 0.3.1
+ * @version: 0.4.0
  * @license: GPLv2
 */
 
@@ -52,50 +52,53 @@ function pat_typo($atts, $thing = null)
 		'preview_only' => true,
 	), $atts));
 
-	// Global rendering value
 	$_proceed = true;
 
 	// Text content choice
 	if ($text == 'title') {
-		$text = title(array('no_widow' => 0));
-	} else {
+		$text = parse('<txp:title escape="tidy, textile" no_widow="0" />');
+	} elseif ($text == 'body') {
 		$_proceed = false;
 		$text = body(array());
+	} else {
+		trigger_error(gTxt('invalid_attribute_value', array('{text}' => 'Incorrect text content..')), E_USER_WARNING);
 	}
+
 
 	// List of functions to load:
 	if (true == $preview_only or true == get_pref('pat_typo_preview_only')) {
 
 		if (gps('txpreview')) {
 
-			$text =  _errors($text);
+			$text = _errors($text);
+			$text = _dialogs($text, $lang);
 			$text =  _numerals($text);
-			$text = _punctuation($text, $lang);
 			$text = _smallwords($text);
+			$text = _punctuation($text, $lang);
 			$text = _widont($text, $no_widow);
 			$text = _first_signs($text , $lang, $force);
 			$text = _last_signs($text , $lang, $force);
-			$text = _dash($text, $force);
+			$text = _dash($text, $lang, $force);
+			$text = _alpha($text, $lang);
 			$text = _inclusive($text, $inclusive);
-			
 		}
 
 	} elseif (false == $preview_only or false == get_pref('pat_typo_proview_only')) {
 
-		$text =  _errors($text);
+		$text = _errors($text);
+		$text = _dialogs($text, $lang);
 		$text = _numerals($text);
-		$text = _punctuation($text, $lang);
 		$text = _smallwords($text);
+		$text = _punctuation($text, $lang);
 		$text = _widont($text, $no_widow);
 		$text = _first_signs($text , $lang, $force);
 		$text = _last_signs($text , $lang, $force);
-		$text = _dash($text, $force);
+		$text = _dash($text, $lang, $force);
+		$text = _alpha($text, $lang);
 		$text = _inclusive($text, $inclusive);
-
-		
 	}
-		return $text;
 
+	return $text;
 }
 
 
@@ -111,10 +114,25 @@ function _errors($text)
 {
 	$first = '/(\()\s+?/im';
 	$temp = preg_replace($first, '$1', $text);
-	$matches = '/\s+?(\,|\.|\))/im';
+	$matches = '/\s+?(\,|\.|\)|\/)/im';
 
 	return preg_replace($matches, '$1', $temp);
 
+}
+
+
+/**
+ * _dialogs
+ *
+ * Converts starting hyphens into new lines by the relevant signs
+ *
+ * @param $text  string The text entry
+ * @return $text string The new text entry
+ */
+function _dialogs($text, $lang)
+{
+	$matches = '/^((<.*>)?[A-Za-z]*|(\R)|\s)\-(\s+)?(.*)/mxu';
+	return preg_replace($matches, '$1&mdash;&nbsp;$5', $text);
 }
 
 
@@ -141,31 +159,6 @@ function _numerals($text)
 
 
 /**
- * _punctuation
- *
- * Adds a space before some signs for French language
- *
- * @param  $text string The text entry
- * @param  $lang string The country code
- * @return $text string The new text entry
- */
-function _punctuation($text , $lang)
-{
-	if ($lang === 'fr' or $lang === 'fr-FR') {
-		// Semi colons but not hellips
-		$pos = '/([^&\w+;][a-zA-Z\)»\?\!]+)(\s+)?([\;])/im';
-		$temp = preg_replace($pos, '$1&nbsp;;', $text);
-		// All others punctuation signs
-		$pattern = '/(\s+)?(\:|\?|\!|\%|\€|km|kg|mg|kW)/im';
-		return preg_replace($pattern, '&#x0202F;$2', $temp);
-	} else {
-		// All other languages than French
-		return $text;
-	}
-}
-
-
-/**
  * _smallwords
  *
  * Surrounds few characters with non breaking spaces
@@ -178,9 +171,34 @@ function _smallwords($text)
 	global $_proceed;
 
 	if ($_proceed) {
-		$matches = '/(\s)([a-zA-Z0-9]{0,3}?[^&#39;|\»|\!|\–|\:|\«])(\s)/';
-		return preg_replace($matches, '&nbsp;$2$3', $text);
+		$matches = '/(\s)([\p{L}]{0,2}?[^&#39;|\»|\!|\–|\:|\«]\s)/';
+		return preg_replace($matches, '&nbsp;$2', $text);
 	} else {
+		return $text;
+	}
+}
+
+
+/**
+ * _punctuation
+ *
+ * Adds a space before some signs for French language
+ *
+ * @param  $text string The text entry
+ * @param  $lang string The country code
+ * @return $text string The new text entry
+ */
+function _punctuation($text , $lang = null)
+{
+	if ($lang === 'fr' or $lang === 'fr-FR') {
+		// Semi colons
+		$pos = '/([^&\w\;]\p{L}+|\»|\"|\))(\s+)?([\;])/';
+		$temp = preg_replace($pos, '$1&#x2005;;', $text);
+		// All others punctuation signs
+		$pattern = '/(\s+)?(\:[^\/\/]|\?|\!|\%|\€|km|cm|kg|mg|kW)/m'; // '/(\s)?(:|\?|\!|\%|\€)/im';
+		return preg_replace($pattern, '&#160;$2', $temp);
+	} else {
+		// All other languages than FRench
 		return $text;
 	}
 }
@@ -197,7 +215,7 @@ function _smallwords($text)
  */
 function _widont($text, $no_widow)
 {
-	return (true == $no_widow ? preg_replace( '/(\s)([^\s\»\&]+)\s*(\s)?$/', '&#160;$2', $text) : $text);
+	return (true == $no_widow ? preg_replace( '/(\s)([^\s\»]+)\s*(\s)?$/', '&#160;$2', $text) : $text);
 }
 
 
@@ -217,12 +235,12 @@ function _first_signs($text, $lang, $force)
 
 	if ($_proceed) {
 		if ($lang == 'fr' or $lang == 'fr-FR') {
-			$thin = ($force == false ? '«&#x0202F;' : '<span class="thinsp">«&#8202;</span>');
+			$thin = $force == false ? '$1&#x0202F;' : '<span class="thinsp">$1&#8202;</span>';
 			// Starting quotes
-			$matches = '/(«|&#34;\/|"\/)(\s?)/';
+			$matches = '/(\«)(?<space> )(\s+)?/'; // '/(«|&#34;\/|"\/)(\s?)/';
 			return preg_replace($matches, $thin, $text);
 		} else {
-			$sign = ($force == false ? '“$2' : '<span class="thinsp">“</span>$2');
+			$sign = $force == false ? '“$2' : '<span class="thinsp">“</span>$2';
 			$matches = '/(&#34;\/|"\/)(\s?)/';
 			return preg_replace($matches, $sign, $text);
 		}
@@ -237,9 +255,10 @@ function _last_signs($text, $lang, $force)
 
 	if ($_proceed) {
 		if ($lang == 'fr' or $lang == 'fr-FR') {
-			$thin = $force == false ? '&#x0202F;»' : '<span class="thinsp">&#8202;»</span>';
+			$thin = $force == false ? '&#x0202F;$3' : '<span class="thinsp">&#8205;$3</span>';
 			// Final quotes
-			$matches = '/(\s?)(»|\/&#34;|\/")/';
+			//$matches = '/([&#]\w+?;|(\bspa\b|\b160\b))?(\s+)?(\»)/'; // '/(\s?)(»|\/&#34;|\/")/';
+			$matches = '/(\s+)?(?<char>�)?(\s+)?(\»)/';
 			return preg_replace($matches, $thin, $text);
 		} else {
 			$sign = $force == false ? '”$2' : '<span class="thinsp">”</span>$2';
@@ -264,12 +283,38 @@ function _last_signs($text, $lang, $force)
  * @param  $force boolean Choice for hair spaces or HTML tags
  * @return $text string   The new text entry
  */
-function _dash($text, $force)
+function _dash($text, $lang, $force)
 {
-	$thin = ($force == false ? '&#x0202F;&#8212;' : '&nbsp;<span class="thinsp">&#8212;</span> ');
-	$matches = '/(\s+)?(&#8212;|-|–)(\s+)?/';
+	if ($lang == 'fr' or $lang == 'fr-FR') {
 
-	return preg_replace($matches, $thin, $text);
+		$thin = $force == false ? $sign.'&#x0202F;$3&#x0202F;'.$sign.'$6' : '<span class="thinsp">'.$sign.'&#8202;$3&#8202;'.$sign.'</span>$6';
+
+		$matches = '/(&#8211;|—|–|-)(\s+)?(.*)(&#8211;|—|–|-)\s/';
+		return preg_replace($matches, '–&#x2005;$3&#x2005;– ', $text);
+	} else {
+		return $text;
+	}
+	
+}
+
+
+/**
+ * _alpha
+ *
+ * Change individual first 'A' letter to its propper 'À' sign
+ *
+ * @param  $text string The text entry
+ * @param  $lang string The country code
+ * @return $text string The new text content
+ */
+function _alpha($text, $lang)
+{
+	if ($lang == 'fr' or $lang == 'fr-FR') {
+		$matches = '/^(<.*>)?(—\s|&mdash;\s)?[A][^\p{L}]|(\.\s)[A](\s)/im'; // '/^(<.*>)?[A][^\p{L}]|(\.\s)[A](\s)/im';
+		return preg_replace($matches, '$1$2$3À ', $text);
+	} else {
+		return $text;
+	}
 }
 
 
@@ -285,9 +330,11 @@ function _dash($text, $force)
  */
 function _inclusive($text, $inclusive)
 {
-	if (true == $inclusive) {
-		$matches = '/(\.)(\p{L}+)/sU';
-		return preg_replace($matches, '<span class="bull">&#8288;•&#8288;</span>$2', $text);
+	global $_proceed;
+
+	if (true == $inclusive and true == $_proceed) {
+		$matches = '/\.(\p{Ll}+)/m';
+		return preg_replace($matches, '<span class="bull">&#8288;•&#8288;</span>$1', $text);
 	} else {
 		return $text;
 	}
@@ -323,4 +370,5 @@ function pat_typo_cleanup()
 {
 	safe_delete('txp_prefs', "name='pat_typo_preview_only'");
 }
+
 
